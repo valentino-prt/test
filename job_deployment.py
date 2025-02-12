@@ -1,7 +1,8 @@
 import logging
 from autosys_job import AutosysJob
 
-def main():
+
+if __name__ == "__main__":
     logger = logging.getLogger('autosys_job_deployment')  # Utiliser le même logger
 
     logger.info("Starting deployment process...")
@@ -13,7 +14,3 @@ def main():
         logger.info(f"Job {job.name} deployed successfully")
     except Exception as e:
         logger.error(f"Error during job deployment: {str(e)}")
-
-if __name__ == "__main__":
-    logger = setup_logging()
-    main()
