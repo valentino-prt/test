@@ -1,6 +1,6 @@
 from autosys_api import AutosysAPI
 from github_change_tracker import GitHubChangeTracker
-
+from autosys_job import Job
 
 class AutosysManager:
     def __init__(self, repo_path: str):
@@ -23,6 +23,11 @@ class AutosysManager:
             self.update_job(file)
 
     def update_job(self, file_path: str):
-        job = AutosysJob(file_path)
-        job.remove_condition()
-        AutosysAPI.add_job(file_path)
+        job = Job.from_jil_file(file_path)
+        job.attributes["owner"] = "new_owner"
+        job.from_jil_file(file_path)
+
+
+        job.to_jil_file(temp_path.name)
+
+        AutosysAPI.update_job(temp_path.name)
