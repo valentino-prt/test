@@ -1,0 +1,56 @@
+from collections import defaultdict, deque
+
+class Dependency:
+    def __init__(self, name, or_dependency):
+        self.name = name
+        self.or_dependency = or_dependency
+
+def dependency_to_and_lists(dependencies):
+    # Step 1: Build adjacency list and calculate in-degrees
+    adj_list = defaultdict(list)
+    in_degree = defaultdict(int)
+
+    # Initialize nodes in in-degree map
+    for dep in dependencies:
+        in_degree[dep.name] = 0
+    
+    # Build graph and in-degree count
+    for dep in dependencies:
+        for req in dep.or_dependency:
+            adj_list[req].append(dep.name)
+            in_degree[dep.name] += 1
+
+    # Step 2: Initialize queue with nodes having in-degree 0
+    queue = deque([node for node in in_degree if in_degree[node] == 0])
+    and_lists = []
+
+    # Step 3: Process nodes to form AND lists
+    while queue:
+        current_and = []
+
+        # Process current level nodes (nodes with no dependencies)
+        for _ in range(len(queue)):
+            node = queue.popleft()
+            current_and.append(node)
+            
+            # Decrease in-degree of neighbors
+            for neighbor in adj_list[node]:
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0:
+                    queue.append(neighbor)
+        
+        and_lists.append(current_and)
+    
+    return and_lists
+
+# Example usage
+dependencies = [
+    Dependency("A", []),
+    Dependency("B", ["A"]),
+    Dependency("C", ["A"]),
+    Dependency("D", ["B", "C"]),
+    Dependency("E", ["D"]),
+]
+
+and_lists = dependency_to_and_lists(dependencies)
+print("AND Lists:", and_lists)
