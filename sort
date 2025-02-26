@@ -1,3 +1,38 @@
+
+from itertools import product
+
+class Dependency:
+    def __init__(self, name, or_dependency):
+        self.name = name
+        self.or_dependency = or_dependency
+
+def dependency_to_and_lists(dependencies):
+    # Récupérer toutes les combinaisons possibles
+    all_combinations = []
+
+    # Utiliser product pour créer les combinaisons de toutes les or_dependencies
+    or_lists = [dep.or_dependency for dep in dependencies]
+    combinations = list(product(*or_lists))
+    
+    # Construire les listes d'AND
+    for combo in combinations:
+        and_group = []
+        for dep_value in combo:
+            and_group.append([dep_value])
+        all_combinations.append(and_group)
+    
+    return all_combinations
+
+# Exemple d'utilisation
+dependencies = [
+    Dependency("node1", [3, 4]),
+    Dependency("node2", [4]),
+]
+
+and_lists = dependency_to_and_lists(dependencies)
+print("AND Lists:", and_lists)
+
+
 from collections import defaultdict, deque
 
 class Dependency:
