@@ -2,6 +2,56 @@
 from itertools import product
 
 class Dependency:
+    def __init__(self, name, or_dependency=None, and_dependency=None):
+        self.name = name
+        self.or_dependency = or_dependency
+        self.and_dependency = and_dependency
+
+    def __repr__(self):
+        return f"Dependency(name={self.name}, and_dependency={self.and_dependency})"
+
+def resolve_dependencies(dependencies):
+    all_combinations = []
+
+    # On génère les options pour chaque dépendance
+    options = []
+    for dep in dependencies:
+        # Si or_dependency est une liste, on crée une option pour chaque élément
+        if isinstance(dep.or_dependency, list):
+            or_options = [Dependency(name=dep.name, and_dependency=or_dep) for or_dep in dep.or_dependency]
+            options.append(or_options)
+        # Si or_dependency est une seule valeur
+        elif dep.or_dependency:
+            options.append([Dependency(name=dep.name, and_dependency=dep.or_dependency)])
+        # Si seulement and_dependency, on garde tel quel
+        elif dep.and_dependency:
+            options.append([dep])
+
+    # Génération de toutes les combinaisons possibles
+    for combination in product(*options):
+        # On vérifie qu'il n'y a pas de doublons de fichiers dans la combinaison
+        dependencies_names = [dep.and_dependency for dep in combination]
+        if len(dependencies_names) == len(set(dependencies_names)):
+            all_combinations.append(list(combination))
+
+    return all_combinations
+
+# Exemple d'utilisation :
+dep1 = Dependency("A", or_dependency=["B", "C"])
+dep2 = Dependency("D", or_dependency="E")
+dep3 = Dependency("F", and_dependency="G")
+dep4 = Dependency("H")
+
+dependencies = [dep1, dep2, dep3, dep4]
+combinations = resolve_dependencies(dependencies)
+
+for i, combo in enumerate(combinations):
+    print(f"Combination {i+1}: {combo}")
+
+
+from itertools import product
+
+class Dependency:
     def __init__(self, name, or_dependency):
         self.name = name
         self.or_dependency = or_dependency
